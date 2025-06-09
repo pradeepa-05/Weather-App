@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 12px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            transition: transform 0.2s ease;
+        }
+
+        /* .container:hover {
+            transform: translateY(-5px);
+        } */
+
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 70%;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s ease;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: none;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #cf1d32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 16px;
+            outline: none;
+        }
+
+        button:hover {
+            background-color: #e61d3b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+            line-height: 1.6;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Weather App</h2>
+        <div class="input-group">
+            <input type="text" id="city" placeholder="Enter city name" />
+            <button id="getWeather">Get Weather</button>
+        </div>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+    $('#getWeather').click(function () {
+        let city = $('#city').val().trim();
+
+        if (city === '') {
+            alert('Please enter a city name');
+            return;
+        }
+
+        let url = `/api/weather/${city}?timestamp=${new Date().getTime()}`;
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                if (data) {
+                    $('#result').html(`
+                        <p><strong>${data.name}</strong></p>
+                        <p>Temperature: ${data.main.temp}°C</p>
+                        <p>Weather: ${data.weather[0].description}</p>
+                        <p>Humidity: ${data.main.humidity}%</p>
+                        <p>Wind Speed: ${data.wind.speed} m/s</p>
+                    `);
+                    $('#city').val('');
+                } else {
+                    $('#result').html('No data found');
+                }
+            },
+            error: function (xhr) {
+                if (xhr.status === 404) {
+                    $('#result').html('City not found');
+                } else {
+                    $('#result').html('Failed to fetch weather data');
+                }
+            }
+        });
+    });
+});
+
+    </script>
+</body>
+</html>
